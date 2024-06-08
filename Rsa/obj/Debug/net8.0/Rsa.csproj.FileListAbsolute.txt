@@ -1,0 +1,15 @@
+/workspaces/RSA-Algorithm/Rsa/obj/Debug/net8.0/Rsa.GeneratedMSBuildEditorConfig.editorconfig
+/workspaces/RSA-Algorithm/Rsa/obj/Debug/net8.0/Rsa.AssemblyInfoInputs.cache
+/workspaces/RSA-Algorithm/Rsa/obj/Debug/net8.0/Rsa.AssemblyInfo.cs
+/workspaces/RSA-Algorithm/Rsa/obj/Debug/net8.0/Rsa.csproj.CoreCompileInputs.cache
+/workspaces/RSA-Algorithm/Rsa/obj/Debug/net8.0/Rsa.sourcelink.json
+/workspaces/RSA-Algorithm/Rsa/bin/Debug/net8.0/Rsa
+/workspaces/RSA-Algorithm/Rsa/bin/Debug/net8.0/Rsa.deps.json
+/workspaces/RSA-Algorithm/Rsa/bin/Debug/net8.0/Rsa.runtimeconfig.json
+/workspaces/RSA-Algorithm/Rsa/bin/Debug/net8.0/Rsa.dll
+/workspaces/RSA-Algorithm/Rsa/bin/Debug/net8.0/Rsa.pdb
+/workspaces/RSA-Algorithm/Rsa/obj/Debug/net8.0/Rsa.dll
+/workspaces/RSA-Algorithm/Rsa/obj/Debug/net8.0/refint/Rsa.dll
+/workspaces/RSA-Algorithm/Rsa/obj/Debug/net8.0/Rsa.pdb
+/workspaces/RSA-Algorithm/Rsa/obj/Debug/net8.0/Rsa.genruntimeconfig.cache
+/workspaces/RSA-Algorithm/Rsa/obj/Debug/net8.0/ref/Rsa.dll
