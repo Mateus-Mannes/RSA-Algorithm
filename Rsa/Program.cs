@@ -1,12 +1,44 @@
 ﻿using System;
 using System.Numerics;
 using System.Security.Cryptography;
+using System.Text;
 
 // Gera p e q de 1024 bits
 BigInteger p = GerarNumeroPrimo(1024);
-BigInteger q = GerarNumeroPrimo(1024);
 Console.WriteLine($"p: {p}\n");
+BigInteger q = GerarNumeroPrimo(1024);
 Console.WriteLine($"q: {q}\n");
+
+// Calcular n e φ(n)
+BigInteger n = p * q;
+Console.WriteLine($"n: {n}\n");
+BigInteger phi = (p - 1) * (q - 1);
+Console.WriteLine($"φ(n): {phi}\n");
+BigInteger e = GerarNumeroE(phi);
+Console.WriteLine($"e: {e}\n");
+
+// Calcular d
+BigInteger d = ModInverse(e, phi);
+Console.WriteLine($"d: {d}\n");
+
+// Mostra chaves
+Console.WriteLine($"Chave Pública: (n={n}, e={e})\n");
+Console.WriteLine($"Chave Privada: (n={n}, d={d})\n");
+
+
+string mensagem = "Criada em 1965, a Universidade do Estado de Santa Catarina (Udesc), que tem excelência no ensino superior atuando nas áreas de ensino, pesquisa e extensão e está entre as melhores universidades do Brasil e do mundo, conta com estrutura multicampi, com 13 unidades distribuídas em dez cidades de Santa Catarina, na Região Sul do Brasil, além de cerca de 30 polos de apoio presencial para o ensino a distância, em parceria com a Universidade Aberta do Brasil (UAB), do Ministério da Educação (MEC). Atualmente, são cerca de 14 mil alunos distribuídos em mais de 60 cursos de graduação e em mais de 50 mestrados e doutorados, além de cursos lato sensu e residências, que são oferecidos gratuitamente, e cerca de 90% dos professores efetivos são doutores. O ingresso na universidade pode ser feito via vestibular (verão e inverno), Sistema de Seleção Unificada (Sisu) e editais de transferência. Ao todo, são mais de três mil vagas todos os anos, sendo 20% para estudantes de escolas públicas e 10% para candidatos negros.";
+Console.WriteLine($"Mensagem Original: {mensagem}\n");
+
+List<BigInteger> mensagemCifrada = CrifrarMensagemEmBlocos(mensagem, e, n);
+Console.WriteLine("Mensagem Cifrada:");
+foreach (var parteCifrada in mensagemCifrada)
+{
+    Console.WriteLine(parteCifrada);
+}
+Console.WriteLine();
+
+string mensagemDecriptada = DecriptarMensagemEmBlocos(mensagemCifrada, d, n);
+Console.WriteLine($"Mensagem Decriptada: {mensagemDecriptada}");
 
 static BigInteger GerarNumeroPrimo(int bits)
 {
@@ -83,4 +115,84 @@ static bool EhPrimo(BigInteger source, int certainty)
 
     // Se passar em todos os testes, é considerado primo.
     return true;
+}
+
+static BigInteger GerarNumeroE(BigInteger phi)
+{
+    RandomNumberGenerator rng = RandomNumberGenerator.Create();
+    byte[] bytes = new byte[phi.ToByteArray().LongLength];
+    BigInteger e;
+
+    do
+    {
+        rng.GetBytes(bytes);
+        e = new BigInteger(bytes);
+        e = BigInteger.Abs(e);
+        e = e % (phi - 1) + 1; // Garantir que 1 < e < phi
+    } while (BigInteger.GreatestCommonDivisor(e, phi) != 1);
+
+    return e;
+}
+
+// Função para calcular o inverso modular usando o algoritmo estendido de Euclides
+static BigInteger ModInverse(BigInteger a, BigInteger m)
+{
+    BigInteger m0 = m, t, q;
+    BigInteger x0 = 0, x1 = 1;
+
+    if (m == 1)
+        return 0;
+
+    while (a > 1)
+    {
+        // q é o quociente
+        q = a / m;
+        t = m;
+
+        // m é o resto agora, processa a mesma coisa que o algoritmo de Euclides
+        m = a % m;
+        a = t;
+        t = x0;
+
+        x0 = x1 - q * x0;
+        x1 = t;
+    }
+
+    // Faz x1 positivo
+    if (x1 < 0)
+        x1 += m0;
+
+    return x1;
+}
+
+static List<BigInteger> CrifrarMensagemEmBlocos(string mensagem, BigInteger e, BigInteger n)
+{
+    byte[] bytes = Encoding.UTF8.GetBytes(mensagem);
+    int maxBlockSize = (n.GetByteCount() - 1); // Tamanho máximo do bloco em bytes
+
+    List<BigInteger> blocosCifrados = new List<BigInteger>();
+    for (int i = 0; i < bytes.Length; i += maxBlockSize)
+    {
+        byte[] bloco = new byte[Math.Min(maxBlockSize, bytes.Length - i)];
+        Array.Copy(bytes, i, bloco, 0, bloco.Length);
+        BigInteger m = new BigInteger(bloco);
+        BigInteger c = BigInteger.ModPow(m, e, n);
+        blocosCifrados.Add(c);
+    }
+
+    return blocosCifrados;
+}
+
+static string DecriptarMensagemEmBlocos(List<BigInteger> mensagemCifrada, BigInteger d, BigInteger n)
+{
+    List<byte> bytesDecriptados = new List<byte>();
+
+    foreach (var blocoCifrado in mensagemCifrada)
+    {
+        BigInteger m = BigInteger.ModPow(blocoCifrado, d, n);
+        byte[] blocoDecriptado = m.ToByteArray();
+        bytesDecriptados.AddRange(blocoDecriptado);
+    }
+
+    return Encoding.UTF8.GetString(bytesDecriptados.ToArray());
 }
